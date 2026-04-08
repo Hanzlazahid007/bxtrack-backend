@@ -33,7 +33,7 @@ export class CustomersService {
       email: dto.email,
       phone: dto.phone,
       organizationId,
-      assignedTo: dto.assignedTo ?? null,
+      assignedTo: dto.assignedTo || userId,
     });
 
     const saved = await this.customerRepo.save(customer);
