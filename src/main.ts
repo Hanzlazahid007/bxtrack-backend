@@ -17,6 +17,7 @@ async function setupApp(app: INestApplication) {
   app.enableCors({
     origin: [
       'http://localhost:3000',
+      'https://bxtrack-backend-ashy.vercel.app/',
       process.env.FRONTEND_URL ?? 'http://localhost:3000',
     ],
     credentials: true,
