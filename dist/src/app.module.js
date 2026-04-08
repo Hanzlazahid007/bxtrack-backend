@@ -36,14 +36,13 @@ exports.AppModule = AppModule = __decorate([
                 inject: [config_1.ConfigService],
                 useFactory: (configService) => ({
                     type: 'postgres',
-                    host: configService.get('DB_HOST', 'localhost'),
-                    port: configService.get('DB_PORT', 5432),
-                    username: configService.get('DB_USERNAME', 'postgres'),
-                    password: configService.get('DB_PASSWORD', 'postgres'),
-                    database: configService.get('DB_NAME', 'crm_db'),
+                    url: configService.get('DATABASE_URL'),
                     entities: [organization_entity_1.Organization, user_entity_1.User, customer_entity_1.Customer, note_entity_1.Note, activity_log_entity_1.ActivityLog],
                     synchronize: configService.get('NODE_ENV') !== 'production',
                     logging: configService.get('NODE_ENV') === 'development',
+                    ssl: configService.get('NODE_ENV') === 'production' || configService.get('DATABASE_URL')?.includes('supabase')
+                        ? { rejectUnauthorized: false }
+                        : false,
                 }),
             }),
             auth_module_1.AuthModule,

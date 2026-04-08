@@ -22,14 +22,13 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432),
-        username: configService.get<string>('DB_USERNAME', 'postgres'),
-        password: configService.get<string>('DB_PASSWORD', 'postgres'),
-        database: configService.get<string>('DB_NAME', 'crm_db'),
+        url: configService.get<string>('DATABASE_URL'),
         entities: [Organization, User, Customer, Note, ActivityLog],
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
         logging: configService.get<string>('NODE_ENV') === 'development',
+        ssl: configService.get<string>('NODE_ENV') === 'production' || configService.get<string>('DATABASE_URL')?.includes('supabase')
+          ? { rejectUnauthorized: false }
+          : false,
       }),
     }),
 

@@ -46,13 +46,10 @@ const activity_action_enum_1 = require("../src/modules/activity-log/enums/activi
 dotenv.config();
 const dataSource = new typeorm_1.DataSource({
     type: 'postgres',
-    host: process.env.DB_HOST ?? 'localhost',
-    port: Number(process.env.DB_PORT ?? 5432),
-    username: process.env.DB_USERNAME ?? 'postgres',
-    password: process.env.DB_PASSWORD ?? 'postgres',
-    database: process.env.DB_NAME ?? 'crm_db',
+    url: process.env.DIRECT_URL,
     entities: [organization_entity_1.Organization, user_entity_1.User, customer_entity_1.Customer, note_entity_1.Note, activity_log_entity_1.ActivityLog],
-    synchronize: false,
+    synchronize: true,
+    ssl: process.env.DIRECT_URL?.includes('supabase') ? { rejectUnauthorized: false } : false,
 });
 async function seed() {
     await dataSource.initialize();

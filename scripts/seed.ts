@@ -13,13 +13,10 @@ dotenv.config();
 
 const dataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST ?? 'localhost',
-  port: Number(process.env.DB_PORT ?? 5432),
-  username: process.env.DB_USERNAME ?? 'postgres',
-  password: process.env.DB_PASSWORD ?? 'postgres',
-  database: process.env.DB_NAME ?? 'crm_db',
+  url: process.env.DIRECT_URL,
   entities: [Organization, User, Customer, Note, ActivityLog],
-  synchronize: false,
+  synchronize: true, // Allow schema creation for the initial seed
+  ssl: process.env.DIRECT_URL?.includes('supabase') ? { rejectUnauthorized: false } : false,
 });
 
 async function seed(): Promise<void> {
