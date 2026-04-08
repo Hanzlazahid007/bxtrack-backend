@@ -4,8 +4,7 @@ const core_1 = require("@nestjs/core");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const app_module_1 = require("./app.module");
-async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+async function setupApp(app) {
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
@@ -26,10 +25,26 @@ async function bootstrap() {
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('api/docs', app, document);
+}
+async function bootstrap() {
+    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    await setupApp(app);
     const port = process.env.PORT ?? 3001;
     await app.listen(port);
     console.log(`🚀 Backend running at http://localhost:${port}`);
     console.log(`📖 Swagger docs: http://localhost:${port}/api/docs`);
 }
-void bootstrap();
+let cachedApp;
+exports.default = async (req, res) => {
+    if (!cachedApp) {
+        const app = await core_1.NestFactory.create(app_module_1.AppModule);
+        await setupApp(app);
+        await app.init();
+        cachedApp = app.getHttpAdapter().getInstance();
+    }
+    return cachedApp(req, res);
+};
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    bootstrap();
+}
 //# sourceMappingURL=main.js.map
